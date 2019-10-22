@@ -1,12 +1,9 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2.1
 executors:
   docker-publisher:
     environment:
       IMAGE_NAME: snazzy/contacts-adapter-template
+      # IMAGE_NAME: openintegrationhub/contacts-adapter-template
     docker:
       - image: circleci/node:8-stretch
 jobs:
@@ -45,7 +42,7 @@ jobs:
             - ./image.tar
       - run:
           command: docker images
-  # Publich the docker image in Dockerhub
+  # Publish the docker image on Dockerhub
   publish-latest:
     executor: docker-publisher
     steps:
