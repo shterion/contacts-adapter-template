@@ -6,7 +6,7 @@ version: 2.1
 executors:
   docker-publisher:
     environment:
-      IMAGE_NAME: snazzy/contacts-adapter-template-test
+      IMAGE_NAME: snazzy/contacts-adapter-template
     docker:
       - image: circleci/node:8-stretch
 jobs:
@@ -62,12 +62,31 @@ jobs:
       #     command: |
       #       echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
       #       docker push snazzy/contacts-adapter-template:latest
+  publish-latest:
+    executor: docker-publisher
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run:
+          name: Load archived Docker image
+          command: docker load -i /tmp/workspace/image.tar
+      - run:
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push snazzy/contacts-adapter-template:latest
 
 workflows:
   version: 2
   build-master:
     jobs:
       - build:
+          filters:
+            branches:
+              only: master
+      - publish-latest:
+          requires:
+            - build
           filters:
             branches:
               only: master
