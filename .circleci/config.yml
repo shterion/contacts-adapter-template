@@ -56,7 +56,7 @@ jobs:
           paths:
             - ./image.tar
       - run:
-          command: ls -lah
+          command: docker images
       # - run:
       #     name: Publish Docker Image to Docker Hub
       #     command: |
