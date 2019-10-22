@@ -37,22 +37,41 @@ jobs:
 
       # run tests!
       - run: yarn test
-      - setup_remote_docker
-      - run:
-          command: docker build -t snazzy/contacts-adapter-template .
-      - run:
-          name: Publish Docker Image to Docker Hub
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push snazzy/contacts-adapter-template:latest
+      # - setup_remote_docker
       # - run:
-      #     name: Build Docker image
-      #     command: docker build -t $IMAGE_NAME:latest .
+      #     command: docker build -t snazzy/contacts-adapter-template .
+      # - run:
+      #     name: Publish Docker Image to Docker Hub
+      #     command: |
+      #       echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      #       docker push snazzy/contacts-adapter-template:latest
+  publish-latest:
+      environment:
+        IMAGE_NAME: snazzy/contacts-adapter-template
+      docker:
+        # specify the version you desire here
+        - image: circleci/node:8-stretch
+      steps:
+        - setup_remote_docker
+        - run:
+            command: docker build -t $IMAGE_NAME .
+        - run:
+            name: Publish Docker Image to Docker Hub
+            command: |
+              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              docker push $IMAGE_NAME:latest
+
 workflows:
   version: 2
   build-master:
     jobs:
       - build:
+          filters:
+            branches:
+              only: master
+      - publish-latest:
+          requires:
+            - build
           filters:
             branches:
               only: master
