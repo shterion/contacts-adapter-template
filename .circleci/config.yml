@@ -53,7 +53,7 @@ jobs:
       - setup_remote_docker
       - run:
         command: docker build -t snazzy/contacts-adapter-template .
-      -run:
+      - run:
         command: docker images
 
   # publish-latest:
