@@ -3,13 +3,20 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2.1
+executors:
+  docker-publisher:
+    environment:
+      IMAGE_NAME: snazzy/contacts-adapter-template
+    docker:
+      - image: circleci/node:8-stretch
 jobs:
   build:
+    executor: docker-publisher
     # environment:
     #   IMAGE_NAME: snazzy/contacts-adapter-template
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:8-stretch
+    # docker:
+    #   # specify the version you desire here
+    #   - image: circleci/node:8-stretch
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -39,12 +46,22 @@ jobs:
       - run: yarn test
       - setup_remote_docker
       - run:
-          command: docker build -t snazzy/contacts-adapter-template .
+          command: docker build -t $IMAGE_NAME .
+          # command: docker build -t snazzy/contacts-adapter-template .
       - run:
-          name: Publish Docker Image to Docker Hub
-          command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push snazzy/contacts-adapter-template:latest
+          name: Archive Docker image
+          command: docker save -o image.tar $IMAGE_NAME
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+      - run:
+          command: ls -lah
+      # - run:
+      #     name: Publish Docker Image to Docker Hub
+      #     command: |
+      #       echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      #       docker push snazzy/contacts-adapter-template:latest
 
 workflows:
   version: 2
