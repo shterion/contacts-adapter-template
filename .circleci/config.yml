@@ -6,7 +6,7 @@ version: 2.1
 executors:
   docker-publisher:
     environment:
-      IMAGE_NAME: snazzy/contacts-adapter-template
+      IMAGE_NAME: snazzy/contacts-adapter-template-test
     docker:
       - image: circleci/node:8-stretch
 jobs:
