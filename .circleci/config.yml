@@ -42,7 +42,7 @@ jobs:
             - ./image.tar
       - run:
           command: docker images
-  # Publish the docker image on Dockerhub
+  # Publish the image on Dockerhub
   publish-latest:
     executor: docker-publisher
     steps:
